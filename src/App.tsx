@@ -1,3 +1,94 @@
+import { useQuery } from "convex/react";
+import { api } from "../convex/_generated/api";
+import CategoryButton from "./components/category-button";
+import { LocationEdit } from "lucide-react";
+import type { DataModel, Id } from "../convex/_generated/dataModel";
+import { useEffect, useState } from "react";
+
+function Product({ product }: { product: DataModel["products"]["document"] }) {
+  return (
+    <div className="flex items-center w-full justify-between gap-2 mb-4">
+      <div className="flex items-center gap-2">
+        {product.image !== "" ? (
+          <img src={product.image} alt={product.name} className="w-16 aspect-square rounded-md" />
+        ) : (
+          <div className="w-16 aspect-square bg-gray-100 rounded-md"></div>
+        )}
+
+        <div>
+          <p className="text-base font-medium">{product.name}</p>
+          <p className="text-sm text-gray-500">{product.description}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <p className="text-sm text-gray-500">{product.price}</p>
+      </div>
+    </div>
+  );
+}
+
+function ProductsByCategory({ categoryId }: { categoryId: Id<"categories"> }) {
+  const products = useQuery(api.functions.getProductByCategoryId, {
+    id: categoryId,
+  });
+
+  const sortedProducts = products?.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+  return (
+    <div className="p-4" dir="rtl">
+      {sortedProducts?.map((product) => (
+        <Product key={product._id} product={product} />
+      ))}
+    </div>
+  );
+}
+
+function CategoryButtons({ categories }: { categories?: DataModel["categories"]["document"][] }) {
+  const [selectedCategory, setSelectedCategory] = useState<Id<"categories"> | null>(null);
+
+  useEffect(() => {
+    if (categories?.length) {
+      setSelectedCategory(categories[0]._id);
+    }
+  }, [categories]);
+
+  return (
+    <>
+      <div className="flex gap-2 p-2 overflow-auto sticky top-0 bg-white" dir="rtl">
+        {categories?.map((category) => (
+          <CategoryButton key={category._id} onClick={() => setSelectedCategory(category._id)}>
+            {category.name}
+          </CategoryButton>
+        ))}
+      </div>
+      {selectedCategory && <ProductsByCategory categoryId={selectedCategory} />}
+    </>
+  );
+}
+
 export default function App() {
-  return <div className="bg-neutral-700">hi</div>;
+  const branches = useQuery(api.functions.getActiveBranches);
+  const sortedBranches = branches?.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+  const categories = useQuery(api.functions.getActiveCategories);
+  const sortedCategories = categories?.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+
+  return (
+    <div className="max-w-xl w-full md:w-[96%] mx-auto min-h-screen border">
+      <div className="bg-red-500 w-full h-48 text-white flex items-center justify-center text-6xl font-black italic">
+        Al-Khabbaz
+      </div>
+
+      <div className="p-4" dir="rtl">
+        {sortedBranches?.map((branch) => (
+          <div key={branch._id} className="flex items-center gap-2 my-2">
+            <LocationEdit size={20} className="text-gray-500" />
+            <p className="text-base font-medium">{branch.name}</p>
+          </div>
+        ))}
+      </div>
+
+      <CategoryButtons categories={sortedCategories} />
+    </div>
+  );
 }
