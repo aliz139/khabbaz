@@ -75,18 +75,21 @@ export default function App() {
 
   return (
     <div className="max-w-xl w-full md:w-[96%] mx-auto min-h-screen border">
-      <div className="bg-red-500 w-full h-48 text-white flex items-center justify-center text-6xl font-black italic">
-        Al-Khabbaz
-      </div>
+      {/* <div className="bg-red-500 w-full h-48 text-white flex items-center justify-center text-6xl font-black italic"> */}
+      {/* Al-Khabbaz */}
+      <img src="/hero.jpg" alt="" />
+      {/* </div> */}
 
-      <div className="p-4" dir="rtl">
+      {/* <div className="p-4" dir="rtl">
         {sortedBranches?.map((branch) => (
           <div key={branch._id} className="flex items-center gap-2 my-2">
             <LocationEdit size={20} className="text-gray-500" />
             <p className="text-base font-medium">{branch.name}</p>
+            <p className="text-sm text-gray-500">{branch.address}</p>
+            <p className="text-sm text-gray-500">{branch.phone}</p>
           </div>
         ))}
-      </div>
+      </div> */}
 
       <CategoryButtons categories={sortedCategories} />
     </div>
