@@ -1,7 +1,6 @@
 import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import CategoryButton from "./components/category-button";
-import { LocationEdit } from "lucide-react";
 import type { DataModel, Id } from "../convex/_generated/dataModel";
 import { useEffect, useState } from "react";
 
@@ -67,9 +66,6 @@ function CategoryButtons({ categories }: { categories?: DataModel["categories"][
 }
 
 export default function App() {
-  const branches = useQuery(api.functions.getActiveBranches);
-  const sortedBranches = branches?.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
-
   const categories = useQuery(api.functions.getActiveCategories);
   const sortedCategories = categories?.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 
