@@ -6,7 +6,7 @@ import CategoryForm from "@/components/forms/category-form";
 import ProductForm from "@/components/forms/product-form";
 import BranchForm from "@/components/forms/branch-form";
 import { useCookies } from "react-cookie";
-import type { DataModel, Id } from "convex/_generated/dataModel";
+import type { DataModel } from "convex/_generated/dataModel";
 import { useState } from "react";
 
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
