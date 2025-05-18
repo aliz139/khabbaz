@@ -6,23 +6,37 @@ import { useEffect, useState } from "react";
 
 function Product({ product }: { product: DataModel["products"]["document"] }) {
   return (
-    <div className="flex items-center w-full justify-between gap-2 mb-4">
-      <div className="flex items-center gap-2">
-        {product.image !== "" ? (
-          <img src={product.image} alt={product.name} className="w-16 aspect-square rounded-md" />
-        ) : (
-          <div className="w-16 aspect-square bg-gray-100 rounded-md"></div>
-        )}
+    <>
+      <div className="flex items-center w-full justify-between gap-2 mb-4">
+        <div className="flex items-center gap-2">
+          {product.image !== "" ? (
+            <img src={product.image} alt={product.name} className="w-16 aspect-square rounded-md" />
+          ) : (
+            <div className="w-16 aspect-square bg-gray-100 rounded-md"></div>
+          )}
 
-        <div>
-          <p className="text-base font-medium">{product.name}</p>
-          <p className="text-sm text-gray-500">{product.description}</p>
+          <div>
+            <p className="text-base font-medium">{product.name}</p>
+            <p className="text-sm text-gray-500">{product.description}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {product.sizes.length > 0 ? (
+            <div className="mt-2 mb-6">
+              {product.sizes.map((s, i) => (
+                <div key={i} className="text-sm text-gray-500 flex gap-2 items-center justify-between">
+                  <span>{s.size}</span>
+
+                  <span>{s.price}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">{product.price}</p>
+          )}
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <p className="text-sm text-gray-500">{product.price}</p>
-      </div>
-    </div>
+    </>
   );
 }
 
