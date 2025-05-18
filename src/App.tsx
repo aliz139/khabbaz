@@ -10,13 +10,13 @@ function Product({ product }: { product: DataModel["products"]["document"] }) {
       <div className="flex items-center w-full justify-between gap-2 mb-4">
         <div className="flex items-center gap-2">
           {product.image !== "" ? (
-            <img src={product.image} alt={product.name} className="w-16 aspect-square rounded-md" />
+            <img src={product.image} alt={product.name} className="w-20 object-cover aspect-square rounded-md" />
           ) : (
-            <div className="w-16 aspect-square bg-gray-100 rounded-md"></div>
+            <div className="w-20 aspect-square bg-gray-100 rounded-md"></div>
           )}
 
           <div>
-            <p className="text-base font-medium">{product.name}</p>
+            <p className="text-xl font-semibold">{product.name}</p>
             <p className="text-sm text-gray-500">{product.description}</p>
           </div>
         </div>
