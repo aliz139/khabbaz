@@ -6,6 +6,10 @@ import CategoryForm from "@/components/forms/category-form";
 import ProductForm from "@/components/forms/product-form";
 import BranchForm from "@/components/forms/branch-form";
 import { useCookies } from "react-cookie";
+import type { DataModel, Id } from "convex/_generated/dataModel";
+import { useState } from "react";
+
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 function BranchesTable() {
   const branches = useQuery(api.functions.getBranches);
@@ -70,9 +74,7 @@ function BranchesTable() {
   );
 }
 
-function CategoriesTable() {
-  const categories = useQuery(api.functions.getCategories);
-
+function CategoriesTable({ categories }: { categories: DataModel["categories"]["document"][] }) {
   const activateCategory = useMutation(api.functions.activateCategory);
   const deactivateCategory = useMutation(api.functions.deActivateCategory);
   const deleteCategory = useMutation(api.functions.removeCategory);
@@ -138,69 +140,98 @@ function CategoriesTable() {
   );
 }
 
-function ProductsTable() {
+function ProductsTable({ categories }: { categories: DataModel["categories"]["document"][] }) {
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+
   const products = useQuery(api.functions.getProducts);
   const deleteProduct = useMutation(api.functions.removeProduct);
   const activateProduct = useMutation(api.functions.activateProduct);
   const deactivateProduct = useMutation(api.functions.deActivateProduct);
 
   return (
-    <table className="min-w-full bg-white border border-gray-200">
-      <thead>
-        <tr className="bg-gray-50">
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sort Order</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-gray-200">
-        {products?.map((product, i) => (
-          <tr key={product._id}>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 w-fit">{i + 1}</td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.name}</td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.price}</td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.sortOrder}</td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex items-center gap-2">
-              <Switch
-                id={product._id}
-                defaultChecked={product.active}
-                onCheckedChange={async (v) => {
-                  if (v) {
-                    await activateProduct({ id: product._id });
-                  } else {
-                    await deactivateProduct({ id: product._id });
-                  }
-                }}
-              />
-              <label htmlFor={product._id}>{product.active ? "Active" : "Inactive"}</label>
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              <ProductForm
-                product={product}
-                child={<button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>}
-              />
+    <>
+      <div className="mb-6">
+        <Select value={selectedCategory} onValueChange={(v) => setSelectedCategory(v)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select a category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {categories.map((c) => (
+                <SelectItem key={c._id} value={c._id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
-              <button
-                className="text-red-600 hover:text-red-900"
-                onClick={async () => {
-                  await deleteProduct({ id: product._id });
-                }}
-              >
-                Delete
-              </button>
-            </td>
+        <p className="text-gray-500 text-sm m-1">Select a category to view products from that category only.</p>
+      </div>
+
+      <table className="min-w-full bg-white border border-gray-200">
+        <thead>
+          <tr className="bg-gray-50">
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Sort Order
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody className="divide-y divide-gray-200">
+          {products?.map((product, i) => {
+            if (selectedCategory && selectedCategory !== product.categoryId) return <></>;
+            return (
+              <tr key={product._id}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 w-fit">{i + 1}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{product.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.price}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.sortOrder}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex items-center gap-2">
+                  <Switch
+                    id={product._id}
+                    defaultChecked={product.active}
+                    onCheckedChange={async (v) => {
+                      if (v) {
+                        await activateProduct({ id: product._id });
+                      } else {
+                        await deactivateProduct({ id: product._id });
+                      }
+                    }}
+                  />
+                  <label htmlFor={product._id}>{product.active ? "Active" : "Inactive"}</label>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <ProductForm
+                    product={product}
+                    child={<button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>}
+                  />
+
+                  <button
+                    className="text-red-600 hover:text-red-900"
+                    onClick={async () => {
+                      await deleteProduct({ id: product._id });
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </>
   );
 }
 
 export default function Admin() {
   const [cookies] = useCookies();
+  const categories = useQuery(api.functions.getCategories);
 
   if (!cookies.user) {
     return <Navigate to="/login" />;
@@ -241,7 +272,7 @@ export default function Admin() {
           <CategoryForm />
         </div>
         <div className="overflow-x-auto">
-          <CategoriesTable />
+          <CategoriesTable categories={categories ?? []} />
         </div>
       </div>
 
@@ -252,7 +283,7 @@ export default function Admin() {
         </div>
 
         <div className="overflow-x-auto">
-          <ProductsTable />
+          <ProductsTable categories={categories ?? []} />
         </div>
       </div>
 
