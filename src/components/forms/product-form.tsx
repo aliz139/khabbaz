@@ -92,6 +92,7 @@ export default function ProductForm({ product, child }: { product?: Product; chi
   return (
     <Dialog
       onOpenChange={() => {
+        if (product) return;
         setSelectedImage(null);
         setSizes([]);
         setNewSize({ size: "", price: 0 });

@@ -5,6 +5,8 @@ import type { DataModel, Id } from "../convex/_generated/dataModel";
 import { useEffect, useState } from "react";
 
 function Product({ product }: { product: DataModel["products"]["document"] }) {
+  const sizes = product.sizes.sort((a, b) => a.price - b.price);
+
   return (
     <>
       <div className="flex items-center w-full justify-between gap-2 mb-4">
@@ -21,9 +23,9 @@ function Product({ product }: { product: DataModel["products"]["document"] }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {product.sizes.length > 0 ? (
+          {sizes.length > 0 ? (
             <div className="mt-2 mb-6">
-              {product.sizes.map((s, i) => (
+              {sizes.map((s, i) => (
                 <div key={i} className="text-sm text-gray-500 flex gap-2 items-center justify-between">
                   <span>{s.size}</span>
 

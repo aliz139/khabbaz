@@ -10,13 +10,13 @@ import type { DataModel } from "convex/_generated/dataModel";
 import { useState } from "react";
 
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Delete } from "@/components/delete";
 
 function BranchesTable() {
   const branches = useQuery(api.functions.getBranches);
 
   const activateBranch = useMutation(api.functions.activateBranch);
   const deactivateBranch = useMutation(api.functions.deActivateBranch);
-  const deleteBranch = useMutation(api.functions.removeBranch);
 
   return (
     <table className="min-w-full bg-white border border-gray-200">
@@ -58,14 +58,7 @@ function BranchesTable() {
                 branch={branch}
                 child={<button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>}
               />
-              <button
-                className="text-red-600 hover:text-red-900"
-                onClick={async () => {
-                  await deleteBranch({ id: branch._id });
-                }}
-              >
-                Delete
-              </button>
+              <Delete id={branch._id} _type="branch" />
             </td>
           </tr>
         ))}
@@ -77,7 +70,6 @@ function BranchesTable() {
 function CategoriesTable({ categories }: { categories: DataModel["categories"]["document"][] }) {
   const activateCategory = useMutation(api.functions.activateCategory);
   const deactivateCategory = useMutation(api.functions.deActivateCategory);
-  const deleteCategory = useMutation(api.functions.removeCategory);
 
   return (
     <table className="min-w-full bg-white border border-gray-200">
@@ -124,14 +116,7 @@ function CategoriesTable({ categories }: { categories: DataModel["categories"]["
                 category={category}
                 child={<button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>}
               />
-              <button
-                className="text-red-600 hover:text-red-900"
-                onClick={async () => {
-                  await deleteCategory({ id: category._id });
-                }}
-              >
-                Delete
-              </button>
+              <Delete id={category._id} _type="category" />
             </td>
           </tr>
         ))}
@@ -144,7 +129,6 @@ function ProductsTable({ categories }: { categories: DataModel["categories"]["do
   const [selectedCategory, setSelectedCategory] = useState<string>();
 
   const products = useQuery(api.functions.getProducts);
-  const deleteProduct = useMutation(api.functions.removeProduct);
   const activateProduct = useMutation(api.functions.activateProduct);
   const deactivateProduct = useMutation(api.functions.deActivateProduct);
 
@@ -211,14 +195,7 @@ function ProductsTable({ categories }: { categories: DataModel["categories"]["do
                     child={<button className="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>}
                   />
 
-                  <button
-                    className="text-red-600 hover:text-red-900"
-                    onClick={async () => {
-                      await deleteProduct({ id: product._id });
-                    }}
-                  >
-                    Delete
-                  </button>
+                  <Delete id={product._id} _type="product" />
                 </td>
               </tr>
             );
