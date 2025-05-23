@@ -3,6 +3,7 @@ import { api } from "../convex/_generated/api";
 import CategoryButton from "./components/category-button";
 import type { DataModel, Id } from "../convex/_generated/dataModel";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function Product({ product }: { product: DataModel["products"]["document"] }) {
   const sizes = product.sizes.sort((a, b) => a.price - b.price);
@@ -102,6 +103,18 @@ export default function App() {
           </div>
         ))}
       </div> */}
+
+      <div className="flex items-center gap-4 p-4">
+        <Link to="https://www.facebook.com/share/19WnqGW2JE/" target="_blank">
+          <img src="/icons8-facebook.svg" alt="Al-khabbaz on facebook" />
+        </Link>
+        <Link to="https://www.instagram.com/alkhabbaz.original?igsh=bjJ5aXVpYmtuYTBi" target="_blank">
+          <img src="/icons8-instagram.svg" alt="Al-khabbaz on instagram" />
+        </Link>
+        <Link to="https://www.tiktok.com/@alkhabbaz.original?_t=ZS-8wbD5Ij9ogM&_r=1" target="_blank">
+          <img src="/icons8-tiktok.svg" alt="Al-khabbaz on tiktok" />
+        </Link>
+      </div>
 
       <CategoryButtons categories={sortedCategories} />
     </div>
